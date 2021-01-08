@@ -24,6 +24,16 @@ public class FlightMission extends AbstractBaseEntity {
     private List<CrewMember> assignedCrew;
     private MissionResult missionResult;
 
+    public FlightMission(String missionName, LocalDate startDate, LocalDate endDate, Long distance, Spaceship assignedSpaceShift, List<CrewMember> assignedCrew, MissionResult missionResult) {
+        this.missionName = missionName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.distance = distance;
+        this.assignedSpaceShift = assignedSpaceShift;
+        this.assignedCrew = assignedCrew;
+        this.missionResult = missionResult;
+    }
+
     public String getMissionName() {
         return missionName;
     }
