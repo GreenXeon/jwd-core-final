@@ -1,5 +1,9 @@
 package com.epam.jwd.core_final.domain;
 
+import com.epam.jwd.core_final.util.PropertyReaderUtil;
+
+import java.util.Properties;
+
 /**
  * This class should be IMMUTABLE!
  * <p>
@@ -14,69 +18,53 @@ package com.epam.jwd.core_final.domain;
  * fileRefreshRate {@link Integer}
  * dateTimeFormat {@link String} - date/time format for {@link java.time.format.DateTimeFormatter} pattern
  */
-public class ApplicationProperties {
+public final class ApplicationProperties {
     //todo
-    private String inputRootDir;
-    private String outputRootDir;
-    private String crewFileName;
-    private String missionsFileName;
-    private String spaceshipsFileName;
-    private Integer fileRefreshDate;
-    private String dateTimeFormat;
+    private final String inputRootDir;
+    private final String outputRootDir;
+    private final String crewFileName;
+    private final String missionsFileName;
+    private final String spaceshipsFileName;
+    private final Integer fileRefreshDate;
+    private final String dateTimeFormat;
+
+    private final Properties properties = PropertyReaderUtil.getProperties();
+
+    public ApplicationProperties() {
+        this.inputRootDir = properties.getProperty("inputRootDir");
+        this.outputRootDir = properties.getProperty("outputRootDir");
+        this.crewFileName = properties.getProperty("crewFileName");
+        this.missionsFileName = properties.getProperty("missionsFileName");
+        this.spaceshipsFileName = properties.getProperty("spaceshipsFileName");
+        this.fileRefreshDate = Integer.getInteger(properties.getProperty("fileRefreshDate"));
+        this.dateTimeFormat = properties.getProperty("dateTimeFormat");
+    }
 
     public String getInputRootDir() {
         return inputRootDir;
-    }
-
-    public void setInputRootDir(String inputRootDir) {
-        this.inputRootDir = inputRootDir;
     }
 
     public String getOutputRootDir() {
         return outputRootDir;
     }
 
-    public void setOutputRootDir(String outputRootDir) {
-        this.outputRootDir = outputRootDir;
-    }
-
     public String getCrewFileName() {
         return crewFileName;
-    }
-
-    public void setCrewFileName(String crewFileName) {
-        this.crewFileName = crewFileName;
     }
 
     public String getMissionsFileName() {
         return missionsFileName;
     }
 
-    public void setMissionsFileName(String missionsFileName) {
-        this.missionsFileName = missionsFileName;
-    }
-
     public String getSpaceshipsFileName() {
         return spaceshipsFileName;
-    }
-
-    public void setSpaceshipsFileName(String spaceshipsFileName) {
-        this.spaceshipsFileName = spaceshipsFileName;
     }
 
     public Integer getFileRefreshDate() {
         return fileRefreshDate;
     }
 
-    public void setFileRefreshDate(Integer fileRefreshDate) {
-        this.fileRefreshDate = fileRefreshDate;
-    }
-
     public String getDateTimeFormat() {
         return dateTimeFormat;
-    }
-
-    public void setDateTimeFormat(String dateTimeFormat) {
-        this.dateTimeFormat = dateTimeFormat;
     }
 }

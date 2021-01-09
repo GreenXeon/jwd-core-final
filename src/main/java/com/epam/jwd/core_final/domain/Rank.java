@@ -1,6 +1,8 @@
 package com.epam.jwd.core_final.domain;
 
 import com.epam.jwd.core_final.exception.UnknownEntityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum Rank implements BaseEntity {
     TRAINEE(1L),
@@ -13,6 +15,8 @@ public enum Rank implements BaseEntity {
     Rank(Long id) {
         this.id = id;
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(Rank.class);
 
     @Override
     public Long getId() {
@@ -43,7 +47,7 @@ public enum Rank implements BaseEntity {
                 throw new UnknownEntityException("Wrong rank id");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Wrong rank id!");
         }
         return result;
     }

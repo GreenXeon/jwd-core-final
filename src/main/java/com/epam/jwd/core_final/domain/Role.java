@@ -16,7 +16,7 @@ public enum Role implements BaseEntity {
         this.id = id;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Role.class);
+    private static final Logger logger = LoggerFactory.getLogger(Role.class);
 
     @Override
     public Long getId() {
@@ -46,7 +46,7 @@ public enum Role implements BaseEntity {
                 throw new UnknownEntityException("Wrong role id");
         }
         catch (Exception e) {
-            LOGGER.debug("test");
+            logger.info("Wrong role id!");
         }
         return result;
     }

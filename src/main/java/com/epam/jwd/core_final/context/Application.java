@@ -12,6 +12,7 @@ public interface Application {
         final NassaContext nassaContext = new NassaContext();
 
         nassaContext.init();
-        return applicationContextSupplier::get;
+        //return applicationContextSupplier::get;
+        return null;
     }
 }

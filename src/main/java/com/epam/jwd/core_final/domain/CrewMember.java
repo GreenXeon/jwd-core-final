@@ -11,12 +11,12 @@ public class CrewMember extends AbstractBaseEntity {
     // todo
     private Role role;
     private Rank rank;
-    private boolean isReadyForNextMissions;
+    private boolean isReadyForNextMissions = true;
 
-    public CrewMember(Role role,Rank rank,boolean isReadyForNextMissions){
+    public CrewMember(Role role, String name, Rank rank){
         this.role = role;
         this.rank = rank;
-        this.isReadyForNextMissions = isReadyForNextMissions;
+        this.name = name;
     }
 
     public Role getRole() {
@@ -41,5 +41,11 @@ public class CrewMember extends AbstractBaseEntity {
 
     public void setReadyForNextMissions(boolean readyForNextMissions) {
         isReadyForNextMissions = readyForNextMissions;
+    }
+
+    public String toString(){
+        return "Crewmember " + this.name
+                + " has a " + this.role + " role and "
+                + this.rank + " rank. Ready for mission: " + this.isReadyForNextMissions;
     }
 }

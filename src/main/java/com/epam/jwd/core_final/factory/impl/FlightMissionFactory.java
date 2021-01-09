@@ -11,6 +11,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class FlightMissionFactory implements EntityFactory {
+    private static FlightMissionFactory instance;
+    private FlightMissionFactory(){
+    }
+    public static FlightMissionFactory getInstance(){
+        if(instance == null){
+            instance = new FlightMissionFactory();
+        }
+        return instance;
+    }
+
     @Override
     public BaseEntity create(Object... args) {
         return new FlightMission((String)args[0], (LocalDate)args[1], (LocalDate)args[2], (Long)args[3],
