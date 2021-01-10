@@ -1,5 +1,6 @@
 package com.epam.jwd.core_final.service;
 
+import com.epam.jwd.core_final.criteria.CrewMemberCriteria;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.CrewMember;
 
@@ -14,9 +15,9 @@ public interface CrewService {
 
     List<CrewMember> findAllCrewMembers();
 
-    List<CrewMember> findAllCrewMembersByCriteria(Criteria<? extends CrewMember> criteria);
+    List<CrewMember> findAllCrewMembersByCriteria(CrewMemberCriteria criteria);
 
-    Optional<CrewMember> findCrewMemberByCriteria(Criteria<? extends CrewMember> criteria);
+    Optional<CrewMember> findCrewMemberByCriteria(CrewMemberCriteria criteria);
 
     CrewMember updateCrewMemberDetails(CrewMember crewMember);
 

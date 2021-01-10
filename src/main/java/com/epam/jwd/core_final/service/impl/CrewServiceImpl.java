@@ -2,13 +2,20 @@ package com.epam.jwd.core_final.service.impl;
 
 import com.epam.jwd.core_final.context.ApplicationContext;
 import com.epam.jwd.core_final.context.impl.NassaContext;
+import com.epam.jwd.core_final.criteria.CrewMemberCriteria;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.CrewMember;
+import com.epam.jwd.core_final.domain.FlightMission;
+import com.epam.jwd.core_final.exception.CrewmemberCreationException;
+import com.epam.jwd.core_final.exception.EntityAssignException;
 import com.epam.jwd.core_final.exception.UnknownEntityException;
 import com.epam.jwd.core_final.service.CrewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CrewServiceImpl implements CrewService {
     private static CrewServiceImpl instance;
@@ -22,8 +29,9 @@ public class CrewServiceImpl implements CrewService {
         return instance;
     }
 
-    private final ApplicationContext applicationContext;
+    private final Logger logger = LoggerFactory.getLogger(CrewServiceImpl.class);
 
+    private final ApplicationContext applicationContext;
 
     @Override
     public List<CrewMember> findAllCrewMembers() {
@@ -31,13 +39,23 @@ public class CrewServiceImpl implements CrewService {
     }
 
     @Override
-    public List<CrewMember> findAllCrewMembersByCriteria(Criteria<? extends CrewMember> criteria) {
-        return null;
+    public List<CrewMember> findAllCrewMembersByCriteria(CrewMemberCriteria criteria) {
+        return findAllCrewMembers()
+                .stream()
+                .filter(member -> member.getRole().equals(criteria.getRole()) || criteria.getRole() == null)
+                .filter(member -> member.getRank().equals(criteria.getRank()) || criteria.getRank() == null)
+                .filter(member -> member.isReadyForNextMissions() == (criteria.isReadyForNextMissions()) || !member.isReadyForNextMissions())
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<CrewMember> findCrewMemberByCriteria(Criteria<? extends CrewMember> criteria) {
-        return Optional.empty();
+    public Optional<CrewMember> findCrewMemberByCriteria(CrewMemberCriteria criteria) {
+        return findAllCrewMembers()
+                .stream()
+                .filter(member -> member.getRole().equals(criteria.getRole()) || criteria.getRole() == null)
+                .filter(member -> member.getRank().equals(criteria.getRank()) || criteria.getRank() == null)
+                .filter(member -> member.isReadyForNextMissions() == (criteria.isReadyForNextMissions()) || !criteria.isReadyForNextMissions())
+                .findAny();
     }
 
     @Override
@@ -52,7 +70,17 @@ public class CrewServiceImpl implements CrewService {
 
     @Override
     public void assignCrewMemberOnMission(CrewMember crewMember) throws RuntimeException {
-
+        List<FlightMission> flightMissions = (List<FlightMission>) applicationContext.retrieveBaseEntityList(FlightMission.class);
+        try {
+            for (FlightMission mission : flightMissions) {
+                if (mission.getAssignedCrew().contains(crewMember)) {
+                    throw new EntityAssignException("Crewmember is already assigned");
+                }
+            }
+            crewMember.setReadyForNextMissions(false);
+        } catch (EntityAssignException e){
+            logger.error(e.getMessage());
+        }
     }
 
     @Override
@@ -60,14 +88,14 @@ public class CrewServiceImpl implements CrewService {
         List<CrewMember> crewMembers = findAllCrewMembers();
         try {
             if (crewMembers.contains(crewMember)) {
-                throw new Exception("Crewmember already exists");
+                throw new CrewmemberCreationException("Crewmember already exists");
             }
             else {
-                crewMembers.add(crewMember);
+                applicationContext.retrieveBaseEntityList(CrewMember.class).add(crewMember);
             }
         }
-        catch (Exception e){
-            e.printStackTrace();
+        catch (CrewmemberCreationException e){
+            logger.error(e.getMessage());
         }
         return crewMember;
     }
