@@ -5,13 +5,17 @@ import com.epam.jwd.core_final.domain.ApplicationProperties;
 import com.epam.jwd.core_final.domain.BaseEntity;
 import com.epam.jwd.core_final.domain.CrewMember;
 import com.epam.jwd.core_final.domain.FlightMission;
+import com.epam.jwd.core_final.domain.MissionResult;
 import com.epam.jwd.core_final.domain.Rank;
 import com.epam.jwd.core_final.domain.Role;
 import com.epam.jwd.core_final.domain.Spaceship;
 import com.epam.jwd.core_final.exception.InvalidStateException;
 import com.epam.jwd.core_final.factory.impl.CrewMemberFactory;
+import com.epam.jwd.core_final.factory.impl.FlightMissionFactory;
 import com.epam.jwd.core_final.factory.impl.SpaceshipFactory;
+import com.epam.jwd.core_final.service.CrewService;
 import com.epam.jwd.core_final.util.PropertyReaderUtil;
+import com.sun.jdi.LocalVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,16 +26,27 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 // todo
 public class NassaContext implements ApplicationContext {
+    private static NassaContext instance = new NassaContext();
+    private NassaContext(){
+    }
+    public static NassaContext getInstance(){
+        return instance;
+    }
 
     private final Logger logger = LoggerFactory.getLogger(NassaContext.class);
     private ApplicationProperties applicationProperties;
@@ -43,7 +58,17 @@ public class NassaContext implements ApplicationContext {
 
     @Override
     public <T extends BaseEntity> Collection<T> retrieveBaseEntityList(Class<T> tClass) {
-        return null;
+        Collection<T> retrieveCollection = null;
+        if (tClass.equals(CrewMember.class)){
+            retrieveCollection = (Collection<T>)crewMembers;
+        }
+        if (tClass.equals(Spaceship.class)){
+            retrieveCollection = (Collection<T>)spaceships;
+        }
+        if (tClass.equals(FlightMission.class)){
+            retrieveCollection = (Collection<T>)missions;
+        }
+        return retrieveCollection;
     }
 
     /**
@@ -56,13 +81,9 @@ public class NassaContext implements ApplicationContext {
         applicationProperties = new ApplicationProperties();
         crewMembers = readCrewFromFile();
         spaceships = readSpaceshipsFromFile();
-        for (CrewMember c : crewMembers){
-            System.out.println(c.toString());
-        }
-        for (Spaceship s : spaceships){
-            System.out.println(s.toString());
-        }
-                //throw new InvalidStateException();
+        missions = generateMissions();
+
+        //throw new InvalidStateException();
     }
 
     private Collection<CrewMember> readCrewFromFile(){
@@ -70,6 +91,7 @@ public class NassaContext implements ApplicationContext {
         Role role;
         Rank rank;
         String[] info;
+        Long id = 0L;
         try {
             Path path = Paths.get("src", "main", "resources", applicationProperties.getInputRootDir(),
                     applicationProperties.getCrewFileName());
@@ -83,7 +105,8 @@ public class NassaContext implements ApplicationContext {
                         role = Role.resolveRoleById(Integer.parseInt(info[0]));
                         rank = Rank.resolveRankById(Integer.parseInt(info[2]));
                         inputInfo.add(CrewMemberFactory.getInstance().create(role, info[1],
-                                rank));
+                                rank, id));
+                        id++;
                     }
                 }
             }
@@ -99,6 +122,7 @@ public class NassaContext implements ApplicationContext {
         String[] crew, mapInfo, spaceshipInfoString;
         String spaceshipName, line;
         Long distance;
+        Long id = 0L;
         try{
             Path path = Paths.get("src", "main", "resources", applicationProperties.getInputRootDir(),
                     applicationProperties.getSpaceshipsFileName());
@@ -120,13 +144,120 @@ public class NassaContext implements ApplicationContext {
                         Short quantity = Short.parseShort(mapInfo[1]);
                         crewMap.put(role, quantity);
                     }
-                    Spaceship spaceship = SpaceshipFactory.getInstance().create(crewMap, spaceshipName, distance);
+                    Spaceship spaceship = SpaceshipFactory.getInstance().create(crewMap, spaceshipName, distance, id);
                     inputInfo.add(spaceship);
+                    id++;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return inputInfo;
+    }
+
+    private Collection<FlightMission> generateMissions(){
+       ArrayList<FlightMission> missions = new ArrayList<>();
+       ArrayList<CrewMember> crew;
+       ArrayList<Spaceship> ships;
+       ArrayList<String> missionNames = new ArrayList<>();
+       int numOfMissions = 8;
+        try{
+            Path path = Paths.get("src", "main", "resources", applicationProperties.getInputRootDir(),
+                    applicationProperties.getMissionsFileName());
+            Scanner scan = new Scanner(path.toFile().getAbsoluteFile());
+            String line;
+            while(scan.hasNextLine()){
+                line = scan.nextLine();
+                missionNames.add(line);
+            }
+            if (missionNames.isEmpty()){
+                throw new InvalidStateException("List of missions is empty");
+            }
+            System.out.println(missionNames);
+        }
+        catch (IOException | NullPointerException | InvalidStateException e){
+            e.printStackTrace();
+        }
+
+        FlightMissionFactory flightMissionFactory = FlightMissionFactory.getInstance();
+        for (int i = 0; i < numOfMissions; i++){
+            crew = new ArrayList<>(crewMembers);
+            ships = new ArrayList<>(spaceships);
+            LocalDate[] dates = randomDates();
+            LocalDate beginDate = dates[0];
+            LocalDate endDate = dates[1];
+            long distance = ThreadLocalRandom.current().nextLong(256042, 1395960);
+            Spaceship spaceship;
+            do {
+                spaceship = ships.get(ThreadLocalRandom.current().nextInt(spaceships.size() - 1));
+            } while (!spaceship.isReadyForNextMissions());
+            String missionName = missionNames.get(ThreadLocalRandom.current().nextInt(missionNames.size() - 1));
+            List<CrewMember> crewMemberList = new ArrayList<>();
+            Map<Role, Short> shipCrewInfo = spaceship.getCrew();
+            for (Role role : shipCrewInfo.keySet()){
+                List<CrewMember> suitableMembers = crew.stream()
+                        .filter(CrewMember::isReadyForNextMissions)
+                        .filter(member -> member.getRole() == role)
+                        .collect(Collectors.toList());
+                //logger.info(String.valueOf(suitableMembers.size()));
+                for (int j = 0; j < shipCrewInfo.get(role); j++){
+                    CrewMember assignedMember = suitableMembers.get(ThreadLocalRandom.current().nextInt(suitableMembers.size()));
+                    crewMemberList.add(assignedMember);
+                }
+            }
+            MissionResult missionResult;
+            do {
+                missionResult = randomResult();
+            } while (!checkDateAndResult(beginDate, endDate, missionResult));
+            if (missionResult == MissionResult.FAILED){
+                for (CrewMember crewMember : crewMemberList){
+                    crewMember.setReadyForNextMissions(false);
+                }
+                spaceship.setReadyForNextMissions(false);
+            }
+            FlightMission flightMission = (FlightMission)flightMissionFactory.create(missionName, beginDate, endDate, distance, spaceship, crewMemberList, missionResult);
+            missions.add(flightMission);
+            logger.info(flightMission.toString());
+        }
+        return missions;
+    }
+
+    private LocalDate[] randomDates(){
+        LocalDate[] localDates = new LocalDate[2];
+        long minDay = LocalDate.of(2018, 5, 13).toEpochDay();
+        long maxDay = LocalDate.of(2022, 10, 27).toEpochDay();
+        long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+        LocalDate beginDate = LocalDate.ofEpochDay(randomDay);
+        LocalDate endDate = LocalDate.of(2018, 5, 13);
+        while (beginDate.isAfter(endDate)) {
+            randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+            endDate = LocalDate.ofEpochDay(randomDay);
+        }
+        localDates[0] = beginDate;
+        localDates[1] = endDate;
+        return localDates;
+    }
+
+    private MissionResult randomResult(){
+        List<MissionResult> missionResults = Arrays.asList(MissionResult.values());
+        int size = missionResults.size();
+        return missionResults.get(ThreadLocalRandom.current().nextInt(size));
+    }
+
+    private boolean checkDateAndResult(LocalDate beginDate, LocalDate endDate, MissionResult missionResult){
+        LocalDate now = LocalDate.now();
+        if (now.isAfter(beginDate) && now.isBefore(endDate) && (missionResult == MissionResult.PLANNED
+                || missionResult == MissionResult.COMPLETED)){
+            return false;
+        }
+        if (now.isAfter(endDate) && (missionResult == MissionResult.PLANNED
+                || missionResult == MissionResult.IN_PROGRESS)){
+            return false;
+        }
+        if (now.isBefore(beginDate) && (missionResult == MissionResult.FAILED
+                || missionResult == MissionResult.IN_PROGRESS || missionResult == MissionResult.COMPLETED)){
+            return false;
+        }
+        return true;
     }
 }

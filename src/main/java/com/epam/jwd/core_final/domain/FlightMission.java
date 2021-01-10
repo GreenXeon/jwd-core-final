@@ -89,4 +89,11 @@ public class FlightMission extends AbstractBaseEntity {
     public void setMissionResult(MissionResult missionResult) {
         this.missionResult = missionResult;
     }
+
+    public String toString(){
+        return missionName + " :\nStart date - " + startDate + "\nEnd date - " + endDate +
+                "\nSpaceship - " + assignedSpaceShift.name + "\nDistance - " + distance +
+                "\nCrew - " + assignedCrew +
+                "\nMission result - " + missionResult + "\n";
+    }
 }

@@ -12,10 +12,11 @@ public class Spaceship extends AbstractBaseEntity {
     private Long flightDistance;
     private boolean isReadyForNextMissions = true;
 
-    public Spaceship(Map<Role, Short> crew, String name, Long flightDistance) {
+    public Spaceship(Map<Role, Short> crew, String name, Long flightDistance, Long id) {
         this.crew = crew;
         this.flightDistance = flightDistance;
         this.name = name;
+        this.id = id;
     }
 
     public Map<Role, Short> getCrew() {
@@ -43,8 +44,8 @@ public class Spaceship extends AbstractBaseEntity {
     }
 
     public String toString(){
-        return "Spaceship " + this.name
-                + " can fly " + this.flightDistance
+        return "Spaceship " + this.name + " has id = " + this.id
+                + ", can fly " + this.flightDistance
                 + " and has a crew: " + this.crew;
     }
 }
