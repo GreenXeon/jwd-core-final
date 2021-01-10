@@ -82,8 +82,9 @@ public class NassaContext implements ApplicationContext {
         crewMembers = readCrewFromFile();
         spaceships = readSpaceshipsFromFile();
         missions = generateMissions();
-
-        //throw new InvalidStateException();
+        if (crewMembers.isEmpty() || spaceships.isEmpty() || missions.isEmpty()){
+            throw new InvalidStateException("Collection is empty");
+        }
     }
 
     private Collection<CrewMember> readCrewFromFile(){
@@ -180,9 +181,11 @@ public class NassaContext implements ApplicationContext {
         }
 
         FlightMissionFactory flightMissionFactory = FlightMissionFactory.getInstance();
+        crew = new ArrayList<>(crewMembers);
+        ships = new ArrayList<>(spaceships);
+        List<String> existingNames = new ArrayList<>();
+        String missionName;
         for (int i = 0; i < numOfMissions; i++){
-            crew = new ArrayList<>(crewMembers);
-            ships = new ArrayList<>(spaceships);
             LocalDate[] dates = randomDates();
             LocalDate beginDate = dates[0];
             LocalDate endDate = dates[1];
@@ -191,7 +194,10 @@ public class NassaContext implements ApplicationContext {
             do {
                 spaceship = ships.get(ThreadLocalRandom.current().nextInt(spaceships.size() - 1));
             } while (!spaceship.isReadyForNextMissions());
-            String missionName = missionNames.get(ThreadLocalRandom.current().nextInt(missionNames.size() - 1));
+            do {
+                missionName = missionNames.get(ThreadLocalRandom.current().nextInt(missionNames.size() - 1));
+            } while (existingNames.contains(missionName));
+            existingNames.add(missionName);
             List<CrewMember> crewMemberList = new ArrayList<>();
             Map<Role, Short> shipCrewInfo = spaceship.getCrew();
             for (Role role : shipCrewInfo.keySet()){
