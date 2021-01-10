@@ -63,6 +63,7 @@ public class NassaMenu<T> implements ApplicationMenu {
         int operation = 0, index = 0, changingId = 0, changerId = 0;
         int[] indexes = new int[2];
         try {
+            System.out.print("Your choice: ");
             operation = scanner.nextInt();
         } catch (NumberFormatException e){
             logger.error(e.getMessage());
@@ -88,51 +89,39 @@ public class NassaMenu<T> implements ApplicationMenu {
                 changingId =indexes[0];
                 changerId = indexes[1];
                 try{
-                    if ((changingId >= crewService.findAllCrewMembers().size() && changingId < 0)
-                    || (changerId >= crewService.findAllCrewMembers().size() && changerId < 0)){
-                        throw new Exception("Wrong index of entity list");
-                    }
+                    crewForChange = crewService.findAllCrewMembers().get(changingId);
+                    crewChangeOn = crewService.findAllCrewMembers().get(changerId);
+                    CrewMember changedMember = crewService.updateCrewMemberDetails(crewForChange, crewChangeOn);
+                    crewMembers.set(changingId, changedMember);
                 } catch (Exception e){
                     logger.error(e.getMessage());
                 }
-                crewForChange = crewService.findAllCrewMembers().get(changingId);
-                crewChangeOn = crewService.findAllCrewMembers().get(changerId);
-                CrewMember changedMember = crewService.updateCrewMemberDetails(crewForChange, crewChangeOn);
-                crewMembers.set(changingId, changedMember);
                 break;
             case (5):
                 indexes = retrievingIndexes(scanner);
                 changingId =indexes[0];
                 changerId = indexes[1];
                 try{
-                    if ((changingId >= spaceshipService.findAllSpaceships().size() && changingId < 0)
-                            || (changerId >= spaceshipService.findAllSpaceships().size() && changerId < 0)){
-                        throw new Exception("Wrong index of entity list");
-                    }
+                    shipForChange = spaceshipService.findAllSpaceships().get(changingId);
+                    shipChangeOn = spaceshipService.findAllSpaceships().get(changerId);
+                    Spaceship changedShip = spaceshipService.updateSpaceshipDetails(shipForChange, shipChangeOn);
+                    spaceships.set(changingId, changedShip);
                 } catch (Exception e){
                     logger.error(e.getMessage());
                 }
-                shipForChange = spaceshipService.findAllSpaceships().get(changingId);
-                shipChangeOn = spaceshipService.findAllSpaceships().get(changerId);
-                Spaceship changedShip = spaceshipService.updateSpaceshipDetails(shipForChange, shipChangeOn);
-                spaceships.set(changingId, changedShip);
                 break;
             case (6):
                 indexes = retrievingIndexes(scanner);
                 changingId =indexes[0];
                 changerId = indexes[1];
                 try{
-                    if ((changingId >= missionService.findAllMissions().size() && changingId < 0)
-                            || (changerId >= missionService.findAllMissions().size() && changerId < 0)){
-                        throw new Exception("Wrong index of entity list");
-                    }
+                    missionForChange = missionService.findAllMissions().get(changingId);
+                    missionChangeOn = missionService.findAllMissions().get(changerId);
+                    FlightMission changedMission = missionService.updateMissionDetails(missionForChange, missionChangeOn);
+                    flightMissions.set(changingId, changedMission);
                 } catch (Exception e){
                     logger.error(e.getMessage());
                 }
-                missionForChange = missionService.findAllMissions().get(changingId);
-                missionChangeOn = missionService.findAllMissions().get(changerId);
-                FlightMission changedMission = missionService.updateMissionDetails(missionForChange, missionChangeOn);
-                flightMissions.set(changingId, changedMission);
                 break;
             case (7):
                 String toOutput = scanner.nextLine();
