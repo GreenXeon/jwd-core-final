@@ -15,7 +15,7 @@ public interface MissionService {
 
     Optional<FlightMission> findMissionByCriteria(FlightMissionCriteria criteria);
 
-    FlightMission updateSpaceshipDetails(FlightMission flightMission);
+    FlightMission updateMissionDetails(FlightMission changing, FlightMission changer);
 
     FlightMission createMission(FlightMission flightMission);
 }

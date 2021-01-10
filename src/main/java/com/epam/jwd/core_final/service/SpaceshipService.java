@@ -19,7 +19,7 @@ public interface SpaceshipService {
 
     Optional<Spaceship> findSpaceshipByCriteria(SpaceshipCriteria criteria);
 
-    Spaceship updateSpaceshipDetails(Spaceship spaceship);
+    Spaceship updateSpaceshipDetails(Spaceship changing, Spaceship changer);
 
     // todo create custom exception for case, when spaceship is not able to be assigned
     void assignSpaceshipOnMission(Spaceship spaceship) throws RuntimeException;

@@ -31,7 +31,7 @@ public final class PropertyReaderUtil {
         try (FileInputStream inputStream = new FileInputStream(new File(propertiesFileName))) {
             properties.load(inputStream);
         } catch (IOException e) {
-            logger.info("Error while reading properties file");
+            logger.error("Error while reading properties file");
         }
     }
 

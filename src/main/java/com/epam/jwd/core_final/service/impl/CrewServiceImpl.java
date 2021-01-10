@@ -59,13 +59,11 @@ public class CrewServiceImpl implements CrewService {
     }
 
     @Override
-    public CrewMember updateCrewMemberDetails(CrewMember crewMember) {
-        List<CrewMember> crewMembers = findAllCrewMembers();
-        Optional<CrewMember> found = crewMembers
-                .stream()
-                .filter(s -> s.equals(crewMember))
-                .findFirst();
-        return found.orElseThrow();
+    public CrewMember updateCrewMemberDetails(CrewMember changing, CrewMember changer) {
+       changing.setRank(changer.getRank());
+       changing.setRole(changer.getRole());
+       changing.setReadyForNextMissions(changer.isReadyForNextMissions());
+       return changing;
     }
 
     @Override

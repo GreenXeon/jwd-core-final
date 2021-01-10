@@ -6,12 +6,9 @@ import com.epam.jwd.core_final.domain.ApplicationProperties;
 import com.epam.jwd.core_final.domain.CrewMember;
 import com.epam.jwd.core_final.domain.FlightMission;
 import com.epam.jwd.core_final.domain.Spaceship;
-import com.epam.jwd.core_final.service.CrewService;
-import com.epam.jwd.core_final.service.MissionService;
 import com.epam.jwd.core_final.service.impl.CrewServiceImpl;
 import com.epam.jwd.core_final.service.impl.MissionServiceImpl;
 import com.epam.jwd.core_final.service.impl.SpaceshipServiceImpl;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +18,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-public class NassaMenu implements ApplicationMenu {
+public class NassaMenu<T> implements ApplicationMenu {
     private static NassaMenu instance;
     private NassaMenu(){
     }
@@ -58,7 +54,14 @@ public class NassaMenu implements ApplicationMenu {
         SpaceshipServiceImpl spaceshipService = SpaceshipServiceImpl.getInstance();
         MissionServiceImpl missionService = MissionServiceImpl.getInstance();
         ApplicationProperties applicationProperties = new ApplicationProperties();
-        int operation = 0;
+        ArrayList<CrewMember> crewMembers = (ArrayList<CrewMember>) crewService.findAllCrewMembers();
+        ArrayList<Spaceship> spaceships = (ArrayList<Spaceship>) spaceshipService.findAllSpaceships();
+        ArrayList<FlightMission> flightMissions = (ArrayList<FlightMission>) missionService.findAllMissions();
+        CrewMember crewForChange, crewChangeOn;
+        FlightMission missionForChange, missionChangeOn;
+        Spaceship shipForChange, shipChangeOn;
+        int operation = 0, index = 0, changingId = 0, changerId = 0;
+        int[] indexes = new int[2];
         try {
             operation = scanner.nextInt();
         } catch (NumberFormatException e){
@@ -66,22 +69,70 @@ public class NassaMenu implements ApplicationMenu {
         }
         switch (operation){
             case (1):
-                List<CrewMember> crewMembers = crewService.findAllCrewMembers();
                 for (CrewMember crewMember : crewMembers){
                     System.out.println(crewMember);
                 }
                 break;
             case (2):
-                List<Spaceship> spaceships = spaceshipService.findAllSpaceships();
                 for (Spaceship spaceship : spaceships){
                     System.out.println(spaceship);
                 }
                 break;
             case (3):
-                List<FlightMission> flightMissions = missionService.findAllMissions();
                 for (FlightMission mission : flightMissions){
                     System.out.println(mission);
                 }
+                break;
+            case (4):
+                indexes = retrievingIndexes(scanner);
+                changingId =indexes[0];
+                changerId = indexes[1];
+                try{
+                    if ((changingId >= crewService.findAllCrewMembers().size() && changingId < 0)
+                    || (changerId >= crewService.findAllCrewMembers().size() && changerId < 0)){
+                        throw new Exception("Wrong index of entity list");
+                    }
+                } catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+                crewForChange = crewService.findAllCrewMembers().get(changingId);
+                crewChangeOn = crewService.findAllCrewMembers().get(changerId);
+                CrewMember changedMember = crewService.updateCrewMemberDetails(crewForChange, crewChangeOn);
+                crewMembers.set(changingId, changedMember);
+                break;
+            case (5):
+                indexes = retrievingIndexes(scanner);
+                changingId =indexes[0];
+                changerId = indexes[1];
+                try{
+                    if ((changingId >= spaceshipService.findAllSpaceships().size() && changingId < 0)
+                            || (changerId >= spaceshipService.findAllSpaceships().size() && changerId < 0)){
+                        throw new Exception("Wrong index of entity list");
+                    }
+                } catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+                shipForChange = spaceshipService.findAllSpaceships().get(changingId);
+                shipChangeOn = spaceshipService.findAllSpaceships().get(changerId);
+                Spaceship changedShip = spaceshipService.updateSpaceshipDetails(shipForChange, shipChangeOn);
+                spaceships.set(changingId, changedShip);
+                break;
+            case (6):
+                indexes = retrievingIndexes(scanner);
+                changingId =indexes[0];
+                changerId = indexes[1];
+                try{
+                    if ((changingId >= missionService.findAllMissions().size() && changingId < 0)
+                            || (changerId >= missionService.findAllMissions().size() && changerId < 0)){
+                        throw new Exception("Wrong index of entity list");
+                    }
+                } catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+                missionForChange = missionService.findAllMissions().get(changingId);
+                missionChangeOn = missionService.findAllMissions().get(changerId);
+                FlightMission changedMission = missionService.updateMissionDetails(missionForChange, missionChangeOn);
+                flightMissions.set(changingId, changedMission);
                 break;
             case (7):
                 String toOutput = scanner.nextLine();
@@ -111,7 +162,26 @@ public class NassaMenu implements ApplicationMenu {
             case (8):
                 System.exit(0);
                 break;
+            default:
+                break;
         }
         printAvailableOptions();
+    }
+
+    private int[] retrievingIndexes(Scanner scanner){
+        int[] index = new int[2];
+        System.out.println("Enter index of entity you wanna change: ");
+        try {
+            index[0] = scanner.nextInt();
+        } catch (NumberFormatException e){
+            logger.error(e.getMessage());
+        }
+        System.out.println("Enter index of entity to change on: ");
+        try {
+            index[1] = scanner.nextInt();
+        } catch (NumberFormatException e){
+            logger.error(e.getMessage());
+        }
+        return index;
     }
 }

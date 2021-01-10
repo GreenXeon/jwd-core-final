@@ -58,8 +58,11 @@ public class SpaceshipServiceImpl implements SpaceshipService {
     }
 
     @Override
-    public Spaceship updateSpaceshipDetails(Spaceship spaceship) {
-        return null;
+    public Spaceship updateSpaceshipDetails(Spaceship changing, Spaceship changer) {
+        changing.setCrew(changer.getCrew());
+        changing.setFlightDistance(changer.getFlightDistance());
+        changing.setReadyForNextMissions(changer.isReadyForNextMissions());
+        return changing;
     }
 
     @Override

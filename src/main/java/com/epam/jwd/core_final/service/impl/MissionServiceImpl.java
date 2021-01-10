@@ -64,8 +64,15 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public FlightMission updateSpaceshipDetails(FlightMission flightMission) {
-        return null;
+    public FlightMission updateMissionDetails(FlightMission changing, FlightMission changer) {
+        changing.setMissionName(changer.getMissionName());
+        changing.setAssignedCrew(changer.getAssignedCrew());
+        changing.setAssignedSpaceShift(changer.getAssignedSpaceShift());
+        changing.setDistance(changer.getDistance());
+        changing.setStartDate(changer.getStartDate());
+        changing.setEndDate(changer.getEndDate());
+        changing.setMissionResult(changer.getMissionResult());
+        return changing;
     }
 
     @Override
