@@ -161,6 +161,7 @@ public class NassaContext implements ApplicationContext {
        ArrayList<CrewMember> crew;
        ArrayList<Spaceship> ships;
        ArrayList<String> missionNames = new ArrayList<>();
+       Long id = 0L;
        int numOfMissions = 8;
         try{
             Path path = Paths.get("src", "main", "resources", applicationProperties.getInputRootDir(),
@@ -172,14 +173,12 @@ public class NassaContext implements ApplicationContext {
                 missionNames.add(line);
             }
             if (missionNames.isEmpty()){
-                throw new InvalidStateException("List of missions is empty");
+                throw new InvalidStateException("List of missions.json is empty");
             }
-            System.out.println(missionNames);
         }
         catch (IOException | NullPointerException | InvalidStateException e){
             e.printStackTrace();
         }
-
         FlightMissionFactory flightMissionFactory = FlightMissionFactory.getInstance();
         crew = new ArrayList<>(crewMembers);
         ships = new ArrayList<>(spaceships);
@@ -221,9 +220,10 @@ public class NassaContext implements ApplicationContext {
                 }
                 spaceship.setReadyForNextMissions(false);
             }
-            FlightMission flightMission = (FlightMission)flightMissionFactory.create(missionName, beginDate, endDate, distance, spaceship, crewMemberList, missionResult);
+            FlightMission flightMission = (FlightMission)flightMissionFactory.create(id, missionName, beginDate, endDate, distance, spaceship, crewMemberList, missionResult);
             missions.add(flightMission);
-            logger.info(flightMission.toString());
+            id++;
+            //logger.info(flightMission.toString());
         }
         return missions;
     }

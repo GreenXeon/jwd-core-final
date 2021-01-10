@@ -21,7 +21,7 @@ public interface Application {
         final Supplier<ApplicationContext> applicationContextSupplier = applicationMenu::getApplicationContext; // todo
         NassaContext nassaContext = NassaContext.getInstance();
         nassaContext.init();
-        CrewServiceImpl crewService = CrewServiceImpl.getInstance();
+        /*CrewServiceImpl crewService = CrewServiceImpl.getInstance();
         MissionServiceImpl missionService = MissionServiceImpl.getInstance();
         SpaceshipServiceImpl spaceshipService = SpaceshipServiceImpl.getInstance();
         System.out.println(crewService.findAllCrewMembers());
@@ -42,9 +42,9 @@ public interface Application {
                 .hasMissionName("Moon colonising")
                 .build()
         ));
-        //System.out.println(spaceshipService.findAllSpaceships());
-        //applicationMenu.printAvailableOptions();
-        //applicationMenu.handleUserInput(null);
+
+         */
+        applicationMenu.printAvailableOptions();
         return applicationContextSupplier::get;
     }
 }

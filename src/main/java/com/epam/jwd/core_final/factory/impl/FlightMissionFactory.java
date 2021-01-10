@@ -23,7 +23,7 @@ public class FlightMissionFactory implements EntityFactory {
 
     @Override
     public BaseEntity create(Object... args) {
-        return new FlightMission((String)args[0], (LocalDate)args[1], (LocalDate)args[2], (Long)args[3],
-                (Spaceship)args[4], (List<CrewMember>)args[5], (MissionResult)args[6]);
+        return new FlightMission((long)args[0], (String)args[1], (LocalDate)args[2], (LocalDate)args[3], (Long)args[4],
+                (Spaceship)args[5], (List<CrewMember>)args[6], (MissionResult)args[7]);
     }
 }

@@ -24,6 +24,7 @@ public final class ApplicationProperties {
     private final String outputRootDir;
     private final String crewFileName;
     private final String missionsFileName;
+    private final String missionsOutput;
     private final String spaceshipsFileName;
     private final Integer fileRefreshDate;
     private final String dateTimeFormat;
@@ -35,6 +36,7 @@ public final class ApplicationProperties {
         this.outputRootDir = properties.getProperty("outputRootDir");
         this.crewFileName = properties.getProperty("crewFileName");
         this.missionsFileName = properties.getProperty("missionsFileName");
+        this.missionsOutput = properties.getProperty("missionsOutput");
         this.spaceshipsFileName = properties.getProperty("spaceshipsFileName");
         this.fileRefreshDate = Integer.getInteger(properties.getProperty("fileRefreshDate"));
         this.dateTimeFormat = properties.getProperty("dateTimeFormat");
@@ -54,6 +56,10 @@ public final class ApplicationProperties {
 
     public String getMissionsFileName() {
         return missionsFileName;
+    }
+
+    public String getMissionsOutput() {
+        return missionsOutput;
     }
 
     public String getSpaceshipsFileName() {
