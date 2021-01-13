@@ -20,6 +20,12 @@ public class CrewMember extends AbstractBaseEntity {
         this.id = id;
     }
 
+    public CrewMember(String name, Role role, Rank rank) {
+        this.role = role;
+        this.rank = rank;
+        this.name = name;
+    }
+
     public Role getRole() {
         return role;
     }

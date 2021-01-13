@@ -19,6 +19,17 @@ public class Spaceship extends AbstractBaseEntity {
         this.id = id;
     }
 
+    public Spaceship(String name, Map<Role, Short> crew, Long flightDistance) {
+        this.crew = crew;
+        this.flightDistance = flightDistance;
+        this.name = name;
+    }
+
+    public Spaceship(String name, Long flightDistance) {
+        this.name = name;
+        this.flightDistance = flightDistance;
+    }
+
     public Map<Role, Short> getCrew() {
         return crew;
     }

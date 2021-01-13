@@ -173,7 +173,7 @@ public class NassaContext implements ApplicationContext {
                 missionNames.add(line);
             }
             if (missionNames.isEmpty()){
-                throw new InvalidStateException("List of missions.json is empty");
+                throw new InvalidStateException("List of missions is empty");
             }
         }
         catch (IOException | NullPointerException | InvalidStateException e){
@@ -204,7 +204,6 @@ public class NassaContext implements ApplicationContext {
                         .filter(CrewMember::isReadyForNextMissions)
                         .filter(member -> member.getRole() == role)
                         .collect(Collectors.toList());
-                //logger.info(String.valueOf(suitableMembers.size()));
                 for (int j = 0; j < shipCrewInfo.get(role); j++){
                     CrewMember assignedMember = suitableMembers.get(ThreadLocalRandom.current().nextInt(suitableMembers.size()));
                     crewMemberList.add(assignedMember);
@@ -220,10 +219,12 @@ public class NassaContext implements ApplicationContext {
                 }
                 spaceship.setReadyForNextMissions(false);
             }
+            if (missionResult == MissionResult.IN_PROGRESS){
+                spaceship.setReadyForNextMissions(false);
+            }
             FlightMission flightMission = (FlightMission)flightMissionFactory.create(id, missionName, beginDate, endDate, distance, spaceship, crewMemberList, missionResult);
             missions.add(flightMission);
             id++;
-            //logger.info(flightMission.toString());
         }
         return missions;
     }

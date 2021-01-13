@@ -60,9 +60,9 @@ public class CrewServiceImpl implements CrewService {
 
     @Override
     public CrewMember updateCrewMemberDetails(CrewMember changing, CrewMember changer) {
+       changing.setName(changer.getName());
        changing.setRank(changer.getRank());
        changing.setRole(changer.getRole());
-       changing.setReadyForNextMissions(changer.isReadyForNextMissions());
        return changing;
     }
 

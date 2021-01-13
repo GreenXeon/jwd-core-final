@@ -11,9 +11,9 @@ import java.util.List;
  * missions.json name {@link String}
  * start date {@link java.time.LocalDate}
  * end date {@link java.time.LocalDate}
- * distance {@link Long} - missions.json distance
+ * distance {@link Long} - mission distance
  * assignedSpaceShift {@link Spaceship} - not defined by default
- * assignedCrew {@link java.util.List<CrewMember>} - list of missions.json members based on ship capacity - not defined by default
+ * assignedCrew {@link java.util.List<CrewMember>} - list of missions members based on ship capacity - not defined by default
  * missionResult {@link MissionResult}
  */
 public class FlightMission extends AbstractBaseEntity {
@@ -41,6 +41,15 @@ public class FlightMission extends AbstractBaseEntity {
         this.distance = distance;
         this.assignedSpaceShift = assignedSpaceShift;
         this.assignedCrew = assignedCrew;
+        this.missionResult = missionResult;
+    }
+
+    public FlightMission(String missionName, LocalDate startDate, LocalDate endDate, Long distance, Spaceship assignedSpaceShift, MissionResult missionResult) {
+        this.missionName = missionName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.distance = distance;
+        this.assignedSpaceShift = assignedSpaceShift;
         this.missionResult = missionResult;
     }
 
